@@ -25,7 +25,9 @@ describe("Home login flow", () => {
     await userEvent.type(screen.getByLabelText(/username/i), "user");
     await userEvent.type(screen.getByLabelText(/password/i), "password");
     await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
-    expect(screen.getByRole("heading", { name: /kanban studio/i })).toBeVisible();
+    expect(
+      await screen.findByRole("heading", { name: /kanban studio/i })
+    ).toBeVisible();
   });
 
   it("logs out and returns to sign in", async () => {
