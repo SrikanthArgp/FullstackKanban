@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 
 from . import db
-from .routes import board, health
+from .routes import ai, board, health
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s %(message)s")
 logger = logging.getLogger("backend")
@@ -21,6 +21,7 @@ def create_app(db_path: Path | None = None) -> FastAPI:
 
     app.include_router(health.router)
     app.include_router(board.router)
+    app.include_router(ai.router)
 
     @app.on_event("startup")
     def on_startup() -> None:

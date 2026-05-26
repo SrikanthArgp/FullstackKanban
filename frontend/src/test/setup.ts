@@ -8,8 +8,32 @@ const cloneBoard = (data: BoardData) =>
 beforeEach(() => {
 	let boardState = cloneBoard(initialData);
 
-	const mockFetch = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+	const mockFetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
 		const method = (init?.method ?? "GET").toUpperCase();
+		const requestUrl =
+			typeof input === "string"
+				? input
+				: input instanceof URL
+					? input.toString()
+					: input.url;
+
+		if (requestUrl.endsWith("/api/ai") && method === "POST") {
+			const nextBoard = {
+				...boardState,
+				columns: boardState.columns.map((column, index) =>
+					index === 0 ? { ...column, title: "AI Updated" } : column
+				),
+			};
+			boardState = cloneBoard(nextBoard);
+			return {
+				ok: true,
+				json: async () => ({
+					message: "Updated the board.",
+					updates: { board: cloneBoard(nextBoard) },
+				}),
+			} as Response;
+		}
+
 		if (method === "PUT" && init?.body) {
 			boardState = JSON.parse(String(init.body)) as BoardData;
 		}

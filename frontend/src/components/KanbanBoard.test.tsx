@@ -45,4 +45,17 @@ describe("KanbanBoard", () => {
 
     expect(within(column).queryByText("New card")).not.toBeInTheDocument();
   });
+
+  it("sends a message to the AI sidebar", async () => {
+    render(<KanbanBoard />);
+
+    const promptInput = await screen.findByPlaceholderText(
+      /ask the assistant about this board/i
+    );
+    await userEvent.type(promptInput, "Rename backlog");
+    await userEvent.click(screen.getByRole("button", { name: /send/i }));
+
+    expect(await screen.findByText(/updated the board/i)).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("AI Updated")).toBeInTheDocument();
+  });
 });
